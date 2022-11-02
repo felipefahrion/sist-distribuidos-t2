@@ -1,29 +1,27 @@
+# Sistemas Distribuídos - Trabalho 2
 
-Sistemas Distribuídos - Trabalho 2
+## Alunos
+ANA CAROLINA FERREIRA
+FELIPE FAHRION
+VINICIUS JAGGI
 
 
-O segundo trabalho da disciplina consiste em desenvolver um programa dis-
-tribu ́ıdo que implemente rel ́ogios vetoriais para ordena ̧c ̃ao de eventos (com
-ordem total). O programa deve receber como entrada um arquivo de con-
-figura ̧c ̃ao e um n ́umero que identifica uma das linhas do arquivo de confi-
-gura ̧c ̃ao. Todos os processos devem possuir uma c ́opia desse arquivo. Cada
-linha do arquivo de configura ̧c ̃ao ter ́a o seguinte formato:
+O segundo trabalho da disciplina consiste em desenvolver um programa distribuído que implemente relógios vetoriais para ordenaçao de eventos (com ordem total). 
+O programa deve receber como entrada um arquivo de configuraçao e um numero que identifica uma das linhas do arquivo de configuraçao. 
+Todos os processos devem possuir uma copia desse arquivo. Cada linha do arquivo de configuraçao terao o seguinte formato:
+
+```
 id host port chance events min_delay max_delay
-• id  ́e um n ́umero inteiro que identifica o processo;
-• host  ́e o hostname ou endere ̧co IP da m ́aquina (nodo) que executa o
-processo;
-• port  ́e o n ́umero da porta que o processo vai escutar;
-• chance  ́e uma probabilidade (entre 0 e 1) da ocorrˆencia de um evento
-de envio de mensagem. Por exemplo, o valor 0.2 significa 20% de
-probabilidade de ser realizado um envio de mensagem, sendo os 80%
-restantes eventos locais;
-• events  ́e o n ́umero de eventos que ser ̃ao executados nesse nodo (recomen-
-da-se aproximadamente 100 eventos);
-• min delay  ́e o tempo m ́ınimo de intervalo entre eventos (recomenda-se
-valores entre 100 e 300 ms);
-• max delay  ́e o tempo m ́aximo de intervalo entre eventos (recomenda-se
-valores entre 350 e 750 ms).
-1
+```
+
+• id é um numero inteiro que identifica o processo;
+• host é o hostname ou endereco IP da maquina (nodo) que executa o processo;
+• port é o numero da porta que o processo vai escutar;
+• chance é uma probabilidade (entre 0 e 1) da ocorrencia de um evento de envio de mensagem. Por exemplo, o valor 0.2 significa 20% de probabilidade de ser realizado um envio de mensagem, sendo os 80% restantes eventos locais;
+• events é o numero de eventos que serao executados nesse nodo (recomenda-se aproximadamente 100 eventos);
+• min delay é o tempo minimo de intervalo entre eventos (recomenda-se valores entre 100 e 300 ms);
+• max delay é o tempo maximo de intervalo entre eventos (recomenda-se valores entre 350 e 750 ms).
+
 Execu ̧c ̃ao do programa e descri ̧c ̃ao do algoritmo:
  ́E importante que um mecanismo de sincroniza ̧c ̃ao inicial seja implemen-
 tado para que todos os processos iniciem a execu ̧c ̃ao do algoritmo ao mesmo
@@ -53,4 +51,4 @@ destinat ́ario da mensagem;
 local, [c,c,c,c,...]  ́e o valor do rel ́ogio vetorial depois do recebimento
 da mensagem, s  ́e ID do nodo remetente da mensagem e t  ́e o valor do
 rel ́ogio l ́ogico recebido com a mensagem.
-2
+

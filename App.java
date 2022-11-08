@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import threads.ReceiveUDP;
+
 public class App {
 
     private static int myProcessId;
@@ -26,6 +28,7 @@ public class App {
     private static int[] clock;
     private static String fileName;
     private static DatagramSocket socket;
+    private static ReceiveUDP receiveUDP;
 
     public static void main(String[] args) throws FileNotFoundException {
 
@@ -38,6 +41,10 @@ public class App {
         }
         
         start_local_clock();
+
+        run();
+
+        new ReceiveUDP(socket).start();
         
         // debug_method();
 
@@ -59,6 +66,10 @@ public class App {
 
         try {
             send_udp_message(message, p.getAddress(), p.getPort());
+
+            System.out.println("p.getAddress() ====> " + p.getAddress());
+            System.out.println("p.p.getPort()() ====> " + p.getPort());
+
         } catch (IOException e) {
             System.out.println("Error send UDP message!");
             System.out.println(e);
@@ -74,10 +85,10 @@ public class App {
 
     public static void run() {
         int countEvent = 0;
-        while (countEvent < myEvents) {
+        while (countEvent < 50) {
             float rnd = random_func(0.1, 0.9);
             if(rnd < myChance){
-                int rndId = new Random().ints(0, (otherHosts.size() - 1)).findFirst().getAsInt();
+                int rndId = new Random().ints(0, (otherHosts.size())).findFirst().getAsInt();
                 external_inc(rndId);
             } else {
                 local_inc();
@@ -90,7 +101,7 @@ public class App {
         String vetorialCloclk = myProcessId + " [ ";
 
         for (int i : clock) {
-            vetorialCloclk += clock[i] + " ";
+            vetorialCloclk += i + " ";
         }
 
         vetorialCloclk += "] ";

@@ -59,6 +59,6 @@ java App <config_file.json> <process_id>
 ### Exemplos
 
 ```
-java App config_sample.json 0
+java App config_sample.txt 0
 
 ```

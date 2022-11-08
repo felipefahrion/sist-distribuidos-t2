@@ -130,8 +130,7 @@ public class App {
         processes = new ArrayList<>();
 
         try {
-            socket = new DatagramSocket(myPort, InetAddress.getByName(myIp));
-            
+            socket = new DatagramSocket(myPort);;
         } catch (Exception e) {
             System.out.println(e);
         }

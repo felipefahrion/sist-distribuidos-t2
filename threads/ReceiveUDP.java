@@ -1,0 +1,36 @@
+package threads;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
+public class ReceiveUDP extends Thread {
+
+    private DatagramSocket socket;
+    private byte[] resource = new byte[1024];
+    private String receivedData;;
+
+    public ReceiveUDP(DatagramSocket eSocket) {
+        socket = eSocket;
+    }
+    
+    public void run(){        
+        while (true) {
+			try {
+				DatagramPacket packet = new DatagramPacket(resource, resource.length);
+				socket.setSoTimeout(500);
+				socket.receive(packet);
+			
+				receivedData = new String(packet.getData(), 0, packet.getLength());
+                System.out.println("received ==> " + receivedData);
+
+			} catch (IOException e) {
+				// System.out.println(e);
+			}
+        }
+    }
+
+    public String getDatag() {
+        return receivedData;
+    }
+}

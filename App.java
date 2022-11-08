@@ -3,7 +3,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -15,21 +14,19 @@ import java.util.Random;
 
 public class App {
 
+    private static int myProcessId;
     private static String myIp;
-    private static String myProcessId;
-    private static String myChance;
-    private static String myEvents;
+    private static int myPort;
+    private static Double myChance;
+    private static int myEvents;
     private static String myMinDelay;
     private static String myMaxDelay;
     private static List<String> otherHosts;
+    private static List<Process> processes;
     private static int[] clock;
-    private static float rndEvetChance;
     private static String fileName;
+    private static DatagramSocket socket;
 
-    /**
-     * @param args
-     * @throws FileNotFoundException
-     */
     public static void main(String[] args) throws FileNotFoundException {
 
         set_up(args);     
@@ -44,46 +41,73 @@ public class App {
         
         // debug_method();
 
-
         // start_multicast();
     }
 
-    public static void start_multicast() throws IOException {
+    private static void local_inc() {
+        clock[myProcessId]++;
 
-
+        print_vetorial_clock("L", null, null, null);
     }
 
-    public static void send_multicast() throws IOException {
-		byte[] messabeByte = new byte[256];
+    private static void external_inc(int id) {
+        clock[myProcessId]++;
 
-		String mens = "Alô, mundo!";
+        Process p = processes.get(id);
 
-		messabeByte = mens.getBytes();
-        
-		DatagramSocket socket = new DatagramSocket();
-		InetAddress multicastGroup = InetAddress.getByName("230.0.0.1");
-		DatagramPacket sentPackt = new DatagramPacket(messabeByte, messabeByte.length, multicastGroup,5000);
-        
-		socket.send(sentPackt);
-		socket.close();
+        String message = "id " + id + " clock " + clock[id]; 
+
+        try {
+            send_udp_message(message, p.getAddress(), p.getPort());
+        } catch (IOException e) {
+            System.out.println("Error send UDP message!");
+            System.out.println(e);
+        }
+
+        print_vetorial_clock("S", String.valueOf(id), null, null);
     }
 
-    public static void receive_multcast() throws IOException {
-        MulticastSocket multicastSocket = new MulticastSocket(5000);
-		InetAddress multicastGroup = InetAddress.getByName("230.0.0.1");
-		multicastSocket.joinGroup(multicastGroup);
+    public static void send_udp_message(String message, String ip, String port) throws IOException {
+        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName(ip), Integer.parseInt(port));
+        socket.send(packet);
+    }
 
-		byte[] messageByte = new byte[256];
+    public static void run() {
+        int countEvent = 0;
+        while (countEvent < myEvents) {
+            float rnd = random_func(0.1, 0.9);
+            if(rnd < myChance){
+                int rndId = new Random().ints(0, (otherHosts.size() - 1)).findFirst().getAsInt();
+                external_inc(rndId);
+            } else {
+                local_inc();
+            }
+            countEvent++;
+        }
+    }
 
-		DatagramPacket pkct = new DatagramPacket(messageByte, messageByte.length);
-		multicastSocket.receive(pkct);
+    private static void print_vetorial_clock(String event, String nodeTo, String nodeFrom, String clockValue) {
+        String vetorialCloclk = myProcessId + " [ ";
 
-		String receivedString = new String(pkct.getData(),0,pkct.getLength());
-		System.out.println("Received: " + receivedString);
+        for (int i : clock) {
+            vetorialCloclk += clock[i] + " ";
+        }
 
-		multicastSocket.leaveGroup(multicastGroup);
-        
-		multicastSocket.close();
+        vetorialCloclk += "] ";
+
+        if(event.equals("L")){
+            vetorialCloclk += "L";
+        } 
+
+        if(event.equals("S")){
+            vetorialCloclk += "S " + nodeTo;
+        } 
+
+        if(event.equals("R")){
+            vetorialCloclk += "R " + nodeFrom + " " + clockValue;
+        } 
+
+        System.out.println(vetorialCloclk);
     }
 
     public static void start_local_clock() {
@@ -95,10 +119,20 @@ public class App {
 
     public static void set_up(String[] args) {
         fileName = args[0];
-        myProcessId = args[1];
+        myProcessId = Integer.parseInt(args[1]);
         otherHosts = new ArrayList<>();
+        processes = new ArrayList<>();
 
-        rndEvetChance = (float)( 0.1 + (Math.random() * 0.9));
+        try {
+            socket = new DatagramSocket(myPort, InetAddress.getByName(myIp));
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public static float random_func(double d, double e) {
+        return (float)( d + (Math.random() * e));
     }
 
     public static void initialize(String fileName) throws IOException {
@@ -113,16 +147,17 @@ public class App {
         while ((st = br.readLine()) != null){
             String[] processLine = st.split(" ");
 
-            if(processLine[0].equals(myProcessId)){
+            if(processLine[0].equals(String.valueOf(myProcessId))){
                 myIp = processLine[1];
-                myProcessId = processLine[2];
-                myChance = processLine[3];
-                myEvents = processLine[4];
+                myPort = Integer.parseInt(processLine[2]);
+                myChance = Double.parseDouble(processLine[3]);
+                myEvents = Integer.parseInt(processLine[4]);
                 myMinDelay = processLine[5];
                 myMaxDelay = processLine[6];
 
             } else {
                 otherHosts.add(processLine[0]);
+                processes.add(new Process(processLine[0], processLine[1], processLine[2]));
             }
         }
 
@@ -130,16 +165,29 @@ public class App {
     }
 
     public static void debug_method() {
-        System.out.println("print other hosts");
-        for (String i : otherHosts) {
+        System.out.println("processes");
+        for (Process i : processes) {
             System.out.println(i);
         }
 
         System.out.println();
 
+        System.out.println("print other hosts");
+        for (String i : otherHosts) {
+            System.out.println(i);
+        }
+
+        
         System.out.println("clock");
         for (int i : clock) {
             System.out.print(i);
         }
+
+        System.out.println();
+        
+        System.out.println("Test print_vetorial_clock ");
+        print_vetorial_clock("L", null, null, null);
+        print_vetorial_clock("S", "1", null, null);
+        print_vetorial_clock("R", null, "3", "28");
     }
 } 

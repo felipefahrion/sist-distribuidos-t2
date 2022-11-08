@@ -3,6 +3,7 @@ package threads;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 
 public class ReceiveUDP extends Thread {
 
@@ -11,8 +12,8 @@ public class ReceiveUDP extends Thread {
     private String receivedData;
     private DatagramPacket packet;
 
-    public ReceiveUDP(DatagramSocket eSocket) {
-        socket = eSocket;
+    public ReceiveUDP(DatagramSocket eSocket, int port) throws SocketException {
+        socket = new DatagramSocket(port);
     }
     
     public void run(){        

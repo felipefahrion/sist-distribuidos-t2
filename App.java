@@ -7,6 +7,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +30,7 @@ public class App {
     private static DatagramSocket socket;
     private static ReceiveUDP receiveUDP;
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException, SocketException {
 
         set_up(args);     
         
@@ -43,7 +44,7 @@ public class App {
 
         run();
 
-        new ReceiveUDP(socket).start();
+        new ReceiveUDP(socket, myPort).start();
         
         // debug_method();
 

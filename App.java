@@ -15,7 +15,6 @@ import java.util.Random;
 import threads.ReceiveUDP;
 
 public class App {
-
     private static int myProcessId;
     private static String myIp;
     private static int myPort;
@@ -66,10 +65,6 @@ public class App {
 
         try {
             send_udp_message(message, p.getAddress(), p.getPort());
-
-            System.out.println("p.getAddress() ====> " + p.getAddress());
-            System.out.println("p.p.getPort()() ====> " + p.getPort());
-
         } catch (IOException e) {
             System.out.println("Error send UDP message!");
             System.out.println(e);
@@ -85,7 +80,7 @@ public class App {
 
     public static void run() {
         int countEvent = 0;
-        while (countEvent < 50) {
+        while (countEvent < myEvents) {
             float rnd = random_func(0.1, 0.9);
             if(rnd < myChance){
                 int rndId = new Random().ints(0, (otherHosts.size())).findFirst().getAsInt();
@@ -153,7 +148,7 @@ public class App {
 
         String st;
 
-        br.readLine(); //skip firts line
+        br.readLine(); //skip first line
 
         while ((st = br.readLine()) != null){
             String[] processLine = st.split(" ");

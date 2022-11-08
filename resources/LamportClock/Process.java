@@ -1,3 +1,4 @@
+package resources.LamportClock;
 public class Process {
     public int id;
     public String host;

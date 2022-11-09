@@ -1,0 +1,1 @@
+java -cp ./bin com.java.MasterApplication $1 $2 $3 $4 $5 $6
